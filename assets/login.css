@@ -1,9 +1,12 @@
 body {
-    background: url(bg.png);
+    background: url(bg2.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+		font-family: 'Roboto', sans-serif;
 }
 
 .inputBg {
-	background: rgba(255,255,255, 0.30);
+	background: rgba(119,136,153, 0.30);
 	border-radius: 25px 60px;
   width: 130%;
 	padding: 40px 40px 20px 40px;
@@ -17,7 +20,7 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: rgba(255,255,255, 0.30);
+    background-color: rgba(119,136,153, 0.30);
   }
   
   li {
@@ -26,20 +29,21 @@ ul {
   
   li a {
     display: block;
-    color: white;
+    color: black;
     text-align: center;
+    font-size: 122%;
     padding: 14px 16px;
     text-decoration: none;
   }
   
   li a:hover {
-    background-color: white;
-    color:black;
+    background-color: black;
+    color:white;
   }
 #panel{
 	border: solid 1px #c3c3c3;
 	display: none;
-  background-color: rgba(255,255,255, 0.30);
+  background-color: rgba(119,136,153, 0.30);
   width:400px;
   float:right;
 }

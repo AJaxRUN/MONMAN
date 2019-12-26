@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FOLIO INDEX</title>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../assets/request.css">
+	<link rel="stylesheet" href="../assets/userlogin.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <ul>
+  		<li style="float:left;margin-left:20px;"><a id="folioPage" class="active" style="text-decoration:none;" href="/folio">MONMAN</a></li>
+  		<!-- <li style="float:right;margin-right:10px" id="flip"><a class="active" style="text-decoration:none;" href="candidates.html">Candidates list</a></li> -->
+	</ul>
+	<style type="text/css">
+		hr{
+			border-color: #696464;
+		}
+		body {
+			font-family: 'Roboto', sans-serif;
+		}
+	</style>
+</head>
+<body>
+	<div id="navbar" style="z-index:1000;position:relative;width:auto;height:auto;"></div>
+	<div class="data">
+		<h2>FOLIO INDEX</h2>
+		<h4>Welcome to MONMAN <%=name%> &#128578</h4>
+		<h3>
+			<div class="form-inline">
+				<input class="form-control" type="text" placeholder="Search" style="margin-left:30%;width:40%;">
+				<button type="button" class="btn btn-info">Find</button>
+			</div>
+			<br>
+			<p>
+				<button type="button" onclick="add()" class="btn-md btn-dark">Add New Transaction</button>
+			</p>
+		</h3>
+		<hr>
+		<table id="folioIndex">
+			<th>S.NO</th>
+            <th>Folio Name</th>
+            <th>Credit</th>
+            <th>Debit</th>
+            <th>Balance</th>
+			<th>Remarks</th>
+			<tr id="addFolio">
+				<td></td>
+				<td><input type="text" class="form-control" id="fname"></td>
+				<td><input type="text" class="form-control" id="fcre"></td>
+				<td><input type="text" class="form-control" id="fdeb"></td>
+				<td><input type="text" class="form-control" id="fbal"></td>
+				<td><input type="text" class="form-control" id="frem"></td>
+				<td><button type="button" class="btn-sm btn-outline-success">Add</button></td>
+				<td><button type="button" class="btn-sm btn-outline-danger" onclick="can()">Cancel</button></td>
+			</tr>
+            <tr class="clickable">
+				<td>1</td>
+                <td>Arjun C R</td>
+                <td>3000</td>
+                <td>2000</td>
+                <td>5000</td>
+                <td>This is a test data</td>
+            </tr>
+            <tr class="clickable">
+				<td>2</td>
+                <td>Aruna C R</td>
+                <td>2122200</td>
+                <td>1022</td>
+                <td>102122</td>
+                <td>Test data</td>
+            </tr>
+		</table>
+	</div>
+</body>
+<script>
+$(".clickable").click(function() {
+    window.location = "/details";
+});
+$("#addFolio").hide();
+function add() {
+	$("#addFolio").show();	
+}
+function can() {
+	$("#addFolio").hide();
+}
+</script>
+</html>
