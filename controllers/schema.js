@@ -10,7 +10,7 @@ module.exports.setSchema = function(app) {
         name:String
     });
     var folioSchema = new mongoose.Schema({
-        id:Number,
+        username:String,
         name:String,
         credit:Number,
         debit:Number,
@@ -18,7 +18,7 @@ module.exports.setSchema = function(app) {
         remarks:String
     });
     var detailSchema = new mongoose.Schema({
-        id:Number,
+        username:String,
         date:Date,      
         credit:Number,
         debit:Number,

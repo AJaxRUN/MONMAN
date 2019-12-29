@@ -23,13 +23,21 @@ module.exports.reqManager = function(app, path, models){
         if(typeof ses!=='undefined' && ses.log == true) {
             var date = new Date();
             console.log("Folio page:"+date);
-            res.render('folio', {name: ses.name});
+            var folioModel = models["folioModel"];
+            folioModel.find({username: ses.username}, (err,dat) => {
+                if (err)
+                    throw err;
+                else 
+                    res.render('folio', {name: ses.name, data:dat});
+            });
         }
         else 
         {
             res.render("login",{msg: "Please log in to continue!"});
         }
     });
+
+    //To go to specific folio
     app.get('/details', function(req,res) {
         console.log("Details page:"+new Date());
         if(typeof ses === 'undefined' || ses.log == false)
@@ -37,7 +45,7 @@ module.exports.reqManager = function(app, path, models){
             res.render("login",{msg:"Please log in to continue!"});
         }
         else {
-            res.render('details', {name: req.query.id});
+            res.render('details', {name: req.query.name});
         }
     });
     app.get("/register", (req,res)=> {
@@ -106,9 +114,65 @@ module.exports.reqManager = function(app, path, models){
         }
     });
     
+    // To create a new folio
+    app.post("/newFolio", urlencodedParser, (req,res)=> {
+        if(typeof ses == "undefined" || ses.log==false)
+        {
+            res.render("login",{msg: "Please log in to continue!"});
+        }
+        else {
+            var name = req.body.name;
+            var rem = req.body.remarks;
+            var folioModel = models["folioModel"];
+            folioModel({username:ses.username,"name":name,credit:0,debit:0,balance:0,remarks:rem}).save((err,data)=> {
+                if (err)
+                    throw err;
+                else
+                    console.log("New folio created:"+new Date());
+                    res.send(data["_id"]);
+            })
+        }
+    });
+
+    //To delete a folio 
+    app.post("/deleteFolio",urlencodedParser,(req,res)=>{
+        var pass = req.body.password;
+        var id = req.body.id;
+        var uname = ses.username;
+        var userModel = models["userModel"];
+        var folioModel = models["folioModel"];
+        if(typeof ses != 'undefined' && ses.log==true) {
+            userModel.find({username : uname},'-_id', (err,data)=>{
+                if(err)
+                    throw err;
+                else if(isEmpty(data))
+                    res.send("failed");
+                else {
+                    bcrypt.compare(pass, data[0]["password"], function(err, peak) {
+                        if(err)
+                            throw err;
+                        else if(peak) {
+                            console.log("Folio removed:"+new Date());
+                            folioModel.deleteOne({username:uname,_id:id}, (err,data)=> {
+                                if(err)
+                                    throw err;
+                                else
+                                    res.send("success");
+                            });
+                        }
+                        else
+                            res.send("failed");
+                    });
+                }
+            }); }
+            else 
+                res.render('login',{msg:"Log in!"});
+    });
+
 
     app.get('/logout',(req,res) => {
-        ses.log= false;
+        if(typeof ses!=="undefined")
+            ses.log= false;
         res.render('login',{msg:"Log in!"});
     });
 

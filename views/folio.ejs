@@ -2,7 +2,6 @@
 <html>
 <head>
 	<title>FOLIO INDEX</title>
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="../assets/request.css">
@@ -65,32 +64,24 @@
 				<td><button type="button" class="btn-sm btn-outline-success" onclick="addNewFolio()">Add</button></td>
 				<td><button type="button" class="btn-sm btn-outline-danger" onclick="can()">Cancel</button></td>
 			</tr>
-            <tr class="clickable" id="1" onclick="gotoDetails(this)">
-				<!-- <td>1</td> -->
-                <td>Arjun C R</td>
-                <td>3000</td>
-                <td>2000</td>
-                <td>5000</td>
-                <td>This is a test data</td>
-            </tr>
-            <tr class="clickable" id="2" onclick="gotoDetails(this)">
-				<!-- <td>2</td> -->
-                <td>Aruna C R</td>
-                <td>2122200</td>
-                <td>1022</td>
-                <td>102122</td>
-                <td>Test data</td>
-            </tr>
+			<% for(var i=0; i < data.length; i++) { %>
+            <tr class="clickable" onclick="gotoDetails(this)" id=<%= data[i].id %> >
+				<td><%=data[i].name%></td>
+                <td><%=data[i].credit%></td>
+                <td><%=data[i].debit%></td>
+                <td><%=data[i].balance%></td>
+                <td><%=data[i].remarks%></td>
+			</tr>
+			<% } %>
 		</table>
 	</div>
 </body>
 <script>
 $("#popupbg").hide();
 $("#addFolio").hide();
-
 //To go to details of folio --------------------------------------------------
 function gotoDetails(the) {
-	window.location = "/details?name="+$(the).attr("id");
+	window.location = "/details?id="+$(the).attr("id")+"&name="+$(the).children(":first").html();
 }
 
 // Adding and cancelling new folios----------------------------------------------
@@ -103,28 +94,30 @@ function addNewFolio() {
 	var credit = $.trim($("#fcre").val());
 	var debit = $.trim($("#fdeb").val());
 	var balance = $.trim($("#fbal").val());
-	if(name!="")
-		alert("Successfully added!");
-	else
+	if(name =="")
 		alert("Missing details!");
-	can();
-	$.ajax({
-		type:"POST",
-		data:"name:"+name,
-		url:"/newFolio",
-		success:function(data) {
-			if(data!="failed") {
-				alert("Successfully added!");
-				var row = '<tr class="clickable" id="'+data+'" onclick="gotoDetails(this)">';
-				row += '<td>'+name+'</td><td>'+credit+'</td><td>'+debit+'</td><td>'+balance+'</td><td>'+remarks+'</td>';
-				row += '</tr>';
-				$("#folioIndex").append(row);
+	else {
+		can();
+		$.ajax({
+			type:"POST",
+			data:"name="+name+"&remarks="+remarks,
+			url:"/newFolio",
+			success:function(data) {
+				if(data!=="failed") {
+					// var row = '<tr class="clickable" id="'+data+'" onclick="gotoDetails(this)">';
+					// row += '<td>'+name+'</td><td>'+credit+'</td><td>'+debit+'</td><td>'+balance+'</td><td>'+remarks+'</td>';
+					// row += '</tr>';
+					//$("#addFolio").after(row);
+					alert("Successfully added!");
+					location.reload();
+					//setTimeout(function(){ console.log(data);document.getElementById('"'+data+'"').hover.apply(node); }, 5000);
+				}
+				else {
+					alert("Error: Unable to create new folio!");
+				}
 			}
-			else {
-				alert("Error: Unable to create new folio!");
-			}
-		}
-	});
+		});
+	}
 }
 function can() {
 	$("#fname").val("");
@@ -136,18 +129,34 @@ function can() {
 }
 
 // To remove a folio -----------------------------------------------------------------
+var remid="";
 $(".pass_con").on("click",function()
 {
 	forpass($(this).attr("id"));
 });
 function forpass(str){
-	if(str=="true")
-		alert("Folio successfully removed!"+document.getElementById("pass").value);
+	if(str=="true" && remid!="") {
+		var pass = document.getElementById("pass").value;
+		$.ajax({
+			type:"POST",
+			data:"password="+pass+"&id="+remid,
+			url:"/deleteFolio",
+			success:function(data) {
+				if(data=="failed")
+					alert("Incorrect password!!");
+				else {
+					alert("Folio successfully removed!!");
+					location.reload();
+				}
+			}
+		});
+	}
+	$("#pass").val("");
 	$("#popupbg").hide();
 }
 function removeFolio(the){ 
-	var name = the.dataset.name;
-	var con = confirm("Are you sure you want to remove folio of "+name+"?");
+	remid = the.dataset.id;
+	var con = confirm("Are you sure you want to remove folio of "+the.dataset.name+"?");
 	if(con)
 		$("#popupbg").show();
 }
@@ -156,7 +165,8 @@ function removeFolio(the){
 $("#folioIndex tr").hover(function() {
 	if($(this).attr("id")!="head"&&$(this).attr("id")!="addFolio") {
 		var name = $(this).children(":first").html();
-		$(this).append("<td><button type='button' class='btn btn-dark'data-name='"+name+"' onclick='event.stopPropagation();removeFolio(this);'>X</button></td>");
+		var id = $(this).attr("id");
+		$(this).append("<td><button type='button' class='btn btn-dark' data-name='"+name+"'  data-id='"+id+"' onclick='event.stopPropagation();removeFolio(this);'>X</button></td>");
 	}
 }, function(){
 	if($(this).attr("id")!="head"&&$(this).attr("id")!="addFolio")

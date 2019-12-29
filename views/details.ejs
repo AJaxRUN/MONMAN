@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>FOLIO DETAILS</title>
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <title>FOLIO DETAILS</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="../assets/request.css">
 	<link rel="stylesheet" href="../assets/userlogin.css">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <ul>
   		<li style="float:left;margin-left:20px;"><a id="folioPage" class="active" style="text-decoration:none;" href="/folio">MONMAN</a></li>
-  		<!-- <li style="float:right;margin-right:10px" id="flip"><a class="active" style="text-decoration:none;" href="candidates.html">Candidates list</a></li> -->
+  		<li style="float:right;margin-right:10px" id="flip"><a class="active" style="text-decoration:none;" href="/logout">Logout</a></li>
 	</ul>
 	<style type="text/css">
 		hr{
@@ -32,7 +31,6 @@
 			</p>
         <table id="folioDetails">
             <tr>
-                <th>S.NO</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th>Credit</th>
@@ -41,7 +39,6 @@
                 <th>Remarks</th>
             </tr>
             <tr id="addDetails">
-                    <td></td>
                     <td><input type="text" class="form-control" id="date"></td>
                     <td><input type="text" class="form-control" id="time"></td>
                     <td><input type="text" class="form-control" id="credit"></td>
@@ -52,7 +49,6 @@
                     <td><button type="button" class="btn-sm btn-outline-danger" onclick="can()">Cancel</button></td>
                 </tr>
             <tr>
-                <td>1</td>
                 <td>12-NOV-2019</td>
                 <td>15:35</td>
                 <td>2000</td>
@@ -61,7 +57,6 @@
                 <td>This transaction happened in Chennai</td>
             </tr>
             <tr>
-                <td>2</td>
                 <td>13-DEC-2018</td>
                 <td>18:12</td>
                 <td>1022</td>
