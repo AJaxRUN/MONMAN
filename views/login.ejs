@@ -12,10 +12,11 @@
 </head>
 <body>
 	<div id="navbar" style="z-index:1000;position:relative;width:auto;height:auto;"></div>
-		<form type="post">
+		<form id="loginForm">
 			<div class="form-group col-lg-3 col-sm-offset-4" style="padding-top: 4%;text-align:center;">
 				<div class="inputBg">
-					<h3>MONMAN</h3><hr>
+					<h3>MONMAN</h3>
+					<h5 style="color: royalblue;"><%=msg%></h5><hr>
           <div class="alert-danger" id="invalid"></div><br>
           <label for="username" style="float:left;margin-bottom:10px;">Username <span class="required-input">*</span> </label>
 					<input type="text" id="username" name="username" placeholder="username" class="form-control">
@@ -24,7 +25,8 @@
 					<input type="password" id="password" name="password" placeholder="Password" class="form-control">
 					<p id="empty_password" class="alert-danger" hidden>Enter your password</p><br>
           <div>
-            <p><button type="button" id="submit_btn" name="login" class="btn btn-primary btn-lg" style="width:150px;">Login</button></p>
+			<p><button type="buton" id="submit_btn" name="login" class="btn btn-primary btn-lg" style="width:150px;">Login</button></p>
+			<p><button type="buton" id="register_btn" name="register" class="btn btn-warning btn-lg" style="width:150px;">Register</button></p>
           </div>
 				</div>
 			</div>
@@ -33,12 +35,19 @@
 </body>
   <script type="text/javascript">
     //To populate college names 
-
+	$("#loginForm").submit(function(e){
+		return false;
+	});
     //Display errormsg
   	function errordisplay(id, msg)
   	{
   		$("#"+id).html(msg).show();
-  	}
+	  }
+	  
+	//Redirect to registration
+	$("#register_btn").click(function() {
+		window.location.href = "/register";
+	});
 
     //Login validation
   	$("#submit_btn").click(function() {
@@ -56,26 +65,27 @@
   			$("#empty_password").hide();
   		if(!$("#empty_password").is(":visible")&&!($("#empty_username").is(":visible")))
   		{
-        var isValid=true;
-  			var uname = $("#username").val();
+			var isValid=true;
+			var uname = $("#username").val();
   			var pwd = $("#password").val();
-        var urldata = "username="+uname+"&password="+pwd;
-        if(isValid)
-          alert("success");
-        // if(isValid) {
-    		// 	$.ajax({
-    		// 		type:"POST",
-    		// 		url:"validate.php?"+urldata,
-    		// 		success:function(data)
-    		// 		{
-    		// 		  if(data==="failed")
-    		// 		  	errordisplay("empty_password","Invalid credentials");
-    		// 		  else if(data==="success") {
-    		// 		  	window.location.href = "../../index.php";
-    		// 		  }
-    		// 		}
-    		// 	});
-        // }
+			var urldata = "username="+uname+"&password="+pwd;
+			if(isValid) {
+				$("#empty_password").hide();
+					$.ajax({
+						type:"POST",
+						url:"/authenticate",
+						data: urldata,
+						success:function(data)
+						{
+						if(data==="error1")
+							errordisplay("empty_password","Incorrect username!");
+						else if(data==="error2")
+							errordisplay("empty_password","Incorrect password!");
+						else if(data==="success")
+							window.location.href = "/folio";
+    				}
+    			});
+        }
       }
   	});
   </script>

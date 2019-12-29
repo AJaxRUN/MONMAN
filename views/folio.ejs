@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <ul>
   		<li style="float:left;margin-left:20px;"><a id="folioPage" class="active" style="text-decoration:none;" href="/folio">MONMAN</a></li>
-  		<!-- <li style="float:right;margin-right:10px" id="flip"><a class="active" style="text-decoration:none;" href="candidates.html">Candidates list</a></li> -->
+  		<li style="float:right;margin-right:10px" id="flip"><a class="active" style="text-decoration:none;" href="/logout">Logout</a></li>
 	</ul>
 	<style type="text/css">
 		hr{
@@ -23,6 +23,15 @@
 </head>
 <body>
 	<div id="navbar" style="z-index:1000;position:relative;width:auto;height:auto;"></div>
+	<div style="height:100%;width:100%;position:absolute;top:0;left:0;background-color:rgba(0,0,0,0.5);" id="popupbg">
+		<div id="popup">
+				<h3>Please enter your password to confirm:</h3>
+				<p><b>Note: All data associated with the folio will be removed!</b></p>
+				<input id="pass" type="password"/>
+				<button id="true" class="btn btn-success pass_con">Ok</button>  
+				<button id="false" class="btn btn-danger pass_con">Cancel</button> 
+		</div>
+	</div>
 	<div class="data">
 		<h2>FOLIO INDEX</h2>
 		<h4>Welcome to MONMAN <%=name%> &#128578</h4>
@@ -38,32 +47,34 @@
 		</h3>
 		<hr>
 		<table id="folioIndex">
-			<th>S.NO</th>
-            <th>Folio Name</th>
-            <th>Credit</th>
-            <th>Debit</th>
-            <th>Balance</th>
-			<th>Remarks</th>
+			<tr id="head">
+				<!-- <th>S.NO</th> -->
+				<th>Folio Name</th>
+				<th>Credit</th>
+				<th>Debit</th>
+				<th>Balance</th>
+				<th>Remarks</th>
+			</tr>
 			<tr id="addFolio">
-				<td></td>
+				<!-- <td></td> -->
 				<td><input type="text" class="form-control" id="fname"></td>
-				<td><input type="text" class="form-control" id="fcre"></td>
-				<td><input type="text" class="form-control" id="fdeb"></td>
-				<td><input type="text" class="form-control" id="fbal"></td>
-				<td><input type="text" class="form-control" id="frem"></td>
-				<td><button type="button" class="btn-sm btn-outline-success">Add</button></td>
+				<td><input type="number" class="form-control" id="fcre" disabled value=0></td>
+				<td><input type="number" class="form-control" id="fdeb" disabled value=0></td>
+				<td><input type="number" class="form-control" id="fbal" disabled value=0></td>
+				<td><input type="text" placeholder="optional" class="form-control" id="frem"></td>
+				<td><button type="button" class="btn-sm btn-outline-success" onclick="addNewFolio()">Add</button></td>
 				<td><button type="button" class="btn-sm btn-outline-danger" onclick="can()">Cancel</button></td>
 			</tr>
-            <tr class="clickable">
-				<td>1</td>
+            <tr class="clickable" id="1" onclick="gotoDetails(this)">
+				<!-- <td>1</td> -->
                 <td>Arjun C R</td>
                 <td>3000</td>
                 <td>2000</td>
                 <td>5000</td>
                 <td>This is a test data</td>
             </tr>
-            <tr class="clickable">
-				<td>2</td>
+            <tr class="clickable" id="2" onclick="gotoDetails(this)">
+				<!-- <td>2</td> -->
                 <td>Aruna C R</td>
                 <td>2122200</td>
                 <td>1022</td>
@@ -74,15 +85,96 @@
 	</div>
 </body>
 <script>
-$(".clickable").click(function() {
-    window.location = "/details";
-});
+$("#popupbg").hide();
 $("#addFolio").hide();
+
+//To go to details of folio --------------------------------------------------
+function gotoDetails(the) {
+	window.location = "/details?name="+$(the).attr("id");
+}
+
+// Adding and cancelling new folios----------------------------------------------
 function add() {
 	$("#addFolio").show();	
 }
+function addNewFolio() {
+	var name = $.trim($("#fname").val());
+	var remarks = $.trim($("#frem").val());
+	var credit = $.trim($("#fcre").val());
+	var debit = $.trim($("#fdeb").val());
+	var balance = $.trim($("#fbal").val());
+	if(name!="")
+		alert("Successfully added!");
+	else
+		alert("Missing details!");
+	can();
+	$.ajax({
+		type:"POST",
+		data:"name:"+name,
+		url:"/newFolio",
+		success:function(data) {
+			if(data!="failed") {
+				alert("Successfully added!");
+				var row = '<tr class="clickable" id="'+data+'" onclick="gotoDetails(this)">';
+				row += '<td>'+name+'</td><td>'+credit+'</td><td>'+debit+'</td><td>'+balance+'</td><td>'+remarks+'</td>';
+				row += '</tr>';
+				$("#folioIndex").append(row);
+			}
+			else {
+				alert("Error: Unable to create new folio!");
+			}
+		}
+	});
+}
 function can() {
+	$("#fname").val("");
+	$("#frem").val("");
+	$("#fcre").val(0);
+	$("#fdeb").val(0);
+	$("#fbal").val(0);
 	$("#addFolio").hide();
 }
+
+// To remove a folio -----------------------------------------------------------------
+$(".pass_con").on("click",function()
+{
+	forpass($(this).attr("id"));
+});
+function forpass(str){
+	if(str=="true")
+		alert("Folio successfully removed!"+document.getElementById("pass").value);
+	$("#popupbg").hide();
+}
+function removeFolio(the){ 
+	var name = the.dataset.name;
+	var con = confirm("Are you sure you want to remove folio of "+name+"?");
+	if(con)
+		$("#popupbg").show();
+}
+
+// For Hover effect on table rows-------------------------------------------------------------------
+$("#folioIndex tr").hover(function() {
+	if($(this).attr("id")!="head"&&$(this).attr("id")!="addFolio") {
+		var name = $(this).children(":first").html();
+		$(this).append("<td><button type='button' class='btn btn-dark'data-name='"+name+"' onclick='event.stopPropagation();removeFolio(this);'>X</button></td>");
+	}
+}, function(){
+	if($(this).attr("id")!="head"&&$(this).attr("id")!="addFolio")
+		$(this).find("td").last().remove();
+});
+
+// To autofill the Balance ----------------------------------------------------------------------------------------
+$('#fcre').change( function() {
+	if($("#fcre").val()!="") { 
+		var bal = parseInt(parseInt($("#fcre").val()) - parseInt($("#fdeb").val()));
+		$("#fbal").val(bal);
+	}
+});
+
+$('#fdeb').change( function() {
+	if($("#fdeb").val()!="")
+		$("#fbal").val(parseInt(parseInt($("#fcre").val()) - parseInt($("#fdeb").val())));
+});
+
 </script>
 </html>

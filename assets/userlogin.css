@@ -98,3 +98,15 @@ tr:nth-child(odd) {
   color:white;
   text-decoration: none;
 }
+
+#popup {
+  width:auto;
+  height:auto;
+  padding:20px;
+  background-color: rgb(50, 136, 223);    
+  position:absolute;
+  border-radius: 20px;
+  top:39%;
+  left:34%;
+  /* display:none; */
+}
