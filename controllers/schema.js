@@ -19,7 +19,10 @@ module.exports.setSchema = function(app) {
     });
     var detailSchema = new mongoose.Schema({
         username:String,
-        date:Date,      
+        name:String,
+        tagid:String,
+        date:String,  
+        time:String,    
         credit:Number,
         debit:Number,
         balance:Number,

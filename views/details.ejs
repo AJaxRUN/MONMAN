@@ -21,16 +21,25 @@
 	</style>
 </head>
 <body>
-	<div id="navbar" style="z-index:1000;position:relative;width:auto;height:auto;"></div>
+    <div id="navbar" style="z-index:1000;position:relative;width:auto;height:auto;"></div>
+    <div style="height:100%;width:100%;position:absolute;top:0;left:0;background-color:rgba(0,0,0,0.5);" id="popupbg">
+		<div id="popup">
+				<h3>Please enter your password to confirm:</h3>
+				<p><b>Note: All data associated with the folio will be removed!</b></p>
+				<input id="pass" type="password"/>
+				<button id="true" class="btn btn-success pass_con">Ok</button>  
+				<button id="false" class="btn btn-danger pass_con">Cancel</button> 
+		</div>
+	</div>
 	<div class="data">
         <h2>FOLIO DETAILS</h2>
-        <h2><%=name%></h2>
+        <h2 id="detailName"><%=name%></h2>
         <br>
 			<p>
-				<button type="button" onclick="add()" class="btn-md btn-dark">Add New Folio</button>
+				<button type="button" onclick="add()" class="btn-md btn-dark">Add New Transaction</button>
 			</p>
         <table id="folioDetails">
-            <tr>
+            <tr id="head">
                 <th>Date</th>
                 <th>Time</th>
                 <th>Credit</th>
@@ -41,39 +50,161 @@
             <tr id="addDetails">
                     <td><input type="text" class="form-control" id="date"></td>
                     <td><input type="text" class="form-control" id="time"></td>
-                    <td><input type="text" class="form-control" id="credit"></td>
-                    <td><input type="text" class="form-control" id="debit"></td>
-                    <td><input type="text" class="form-control" id="balance"></td>
-                    <td><input type="text" class="form-control" id="remarks"></td>
-                    <td><button type="button" class="btn-sm btn-outline-success">Add</button></td>
+                    <td><input type="number" class="form-control" id="credit"></td>
+                    <td><input type="number" class="form-control" id="debit"></td>
+                    <td><input type="number" class="form-control" id="balance" disabled></td>
+                    <td><input type="text" class="form-control" id="remarks" placeholder="optional"></td>
+                    <td><button type="button" class="btn-sm btn-outline-success" onclick="addNewDetail()">Add</button></td>
                     <td><button type="button" class="btn-sm btn-outline-danger" onclick="can()">Cancel</button></td>
                 </tr>
-            <tr>
-                <td>12-NOV-2019</td>
-                <td>15:35</td>
-                <td>2000</td>
-                <td>5000</td>
-                <td>21200</td>
-                <td>This transaction happened in Chennai</td>
-            </tr>
-            <tr>
-                <td>13-DEC-2018</td>
-                <td>18:12</td>
-                <td>1022</td>
-                <td>21200</td>
-                <td>102122</td>
-                <td>Test transcaction data</td>
-            </tr>
+            <% if(data!="") { var bsum=0,csum=0,dsum=0;
+				for(var i=0; i < data.length; i++) {
+					bsum += data[i].balance;
+					dsum += data[i].debit;
+					csum += data[i].credit;%>
+            <tr class="clickable" id=<%= data[i]._id %> >
+				<td><%=data[i].date%></td>
+				<td><%=data[i].time%></td>
+                <td><%=data[i].credit%></td>
+                <td><%=data[i].debit%></td>
+                <td><%=data[i].balance%></td>
+                <td><%=data[i].remarks%></td>
+			</tr>
+            <%}%>
+            <tr id="sum"><td><b>TOTAL</b></td><td>:</td><td id="csum"><%=csum%></td><td id="dsum"><%=dsum%></td><td id="bsum"><%=bsum%></td><td>-</td></tr>
+			<%} else {%>
+				<h4>No records found!!</h4><%}%>
         </table>
     </div>
 </body>
 <script>
+$("#popupbg").hide();
 $("#addDetails").hide();
+var params = (new URL(document.location)).searchParams;
+var tagid = params.get("id");
+
+// Adding and cancelling new details----------------------------------------------
 function add() {
-	$("#addDetails").show();	
+    var currentTime = new Date();
+    var currentOffset = currentTime.getTimezoneOffset();
+    var ISTOffset = 330;   // IST offset UTC +5:30 
+    var ISTTime = new Date(currentTime.getTime() + (ISTOffset + currentOffset)*60000);
+    var hoursIST = ISTTime.getHours()
+    var minutesIST = ISTTime.getMinutes()
+    var today = new Date();
+    $("#addDetails").show();	
+    $("#date").val(today.getDate()+"-"+(today.getMonth()+1)+"-"+today.getFullYear());
+    $("#time").val(hoursIST+":"+minutesIST);
+    $("#credit").val(0);
+	$("#debit").val(0);
+	$("#balance").val(0);
+}
+function addNewDetail() {
+    var dat = $.trim($("#date").val().toString());
+    var name = $.trim($("#detailName").html());
+    var tim = $.trim($("#time").val().toString());
+	var remarks = $.trim($("#remarks").val());
+	var credit = $.trim($("#credit").val());
+	var debit = $.trim($("#debit").val());
+	var balance = $.trim($("#balance").val());
+	if(name==""||dat==""||tim==""||credit==""||debit==""||balance=="")
+		alert("Missing details!");
+	else {
+		can();
+		tim = tim.replace(/-/g,"A");
+		dat = dat.replace(/:/g,"A");
+        var daata="id="+tagid+"&date="+dat+"&remarks="+remarks+"&time="+tim+"&credit="+credit+"&debit="+debit+"&balance="+balance+"&name="+name;
+		console.log(daata);
+		$.ajax({
+			type:"POST",
+			data: daata,
+			url:"/newDetail",
+			success:function(data) {
+				if(data!=="failed") {
+					// var row = '<tr class="clickable" id="'+data+'" onclick="gotoDetails(this)">';
+					// row += '<td>'+name+'</td><td>'+credit+'</td><td>'+debit+'</td><td>'+balance+'</td><td>'+remarks+'</td>';
+					// row += '</tr>';
+					//$("#addDetails").after(row);
+					alert("Successfully added!");
+					location.reload();
+					//setTimeout(function(){ console.log(data);document.getElementById('"'+data+'"').hover.apply(node); }, 5000);
+				}
+				else {
+					alert("Error: Unable to create new transaction!");
+				}
+			}
+		});
+	}
 }
 function can() {
+    $("#date").val("");
+    $("#time").val("");
+	$("#remarks").val("");
+	$("#credit").val(0);
+	$("#debit").val(0);
+	$("#balance").val(0);
 	$("#addDetails").hide();
 }
+
+// To remove a detail -----------------------------------------------------------------
+var remid="";
+$(".pass_con").on("click",function()
+{
+	forpass($(this).attr("id"));
+});
+function forpass(str){
+	if(str=="true" && remid!="") {
+		var pass = document.getElementById("pass").value;
+		var cre =  -parseInt($("#"+remid).children(":nth-child(3)").html());
+		var deb =  -parseInt($("#"+remid).children(":nth-child(4)").html());
+		var bal =  -parseInt($("#"+remid).children(":nth-child(5)").html());
+		var daata = "password="+pass+"&id="+remid+"&tagid="+tagid+"&credit="+cre+"&debit="+deb+"&balance="+bal;
+		$.ajax({
+			type:"POST",
+			data: daata,
+			url:"/deleteDetail",
+			success:function(data) {
+				if(data=="failed")
+					alert("Incorrect password!!");
+				else {
+					alert("Detail successfully removed!!");
+					location.reload();
+				}
+			}
+		});
+	}
+	$("#pass").val("");
+	$("#popupbg").hide();
+}
+function removeFolio(the){ 
+	remid = the.dataset.id;
+	var con = confirm("Are you sure you want to remove transaction of "+the.dataset.id+"?");
+	if(con)
+		$("#popupbg").show();
+}
+
+// For Hover effect on table rows-------------------------------------------------------------------
+$("#folioDetails tr").hover(function() {
+	if($(this).attr("id")!="sum"&&$(this).attr("id")!="head"&&$(this).attr("id")!="addDetails") {
+		var id = $(this).attr("id");
+		$(this).append("<td><button type='button' class='btn btn-dark' data-id='"+id+"' onclick='event.stopPropagation();removeFolio(this);'>X</button></td>");
+	}
+}, function(){
+	if($(this).attr("id")!="sum"&&$(this).attr("id")!="head"&&$(this).attr("id")!="addDetails")
+		$(this).find("td").last().remove();
+});
+
+// To autofill the Balance ----------------------------------------------------------------------------------------
+$('#credit').change( function() {
+	if($("#credit").val()!="") { 
+		var bal = parseInt(parseInt($("#credit").val()) - parseInt($("#debit").val()));
+		$("#balance").val(bal);
+	}
+});
+$('#debit').change( function() {
+	if($("#debit").val()!="")
+		$("#balance").val(parseInt(parseInt($("#credit").val()) - parseInt($("#debit").val())));
+});
+
 </script>
 </html>

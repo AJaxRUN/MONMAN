@@ -41,7 +41,7 @@
 			</div>
 			<br>
 			<p>
-				<button type="button" onclick="add()" class="btn-md btn-dark">Add New Transaction</button>
+				<button type="button" onclick="add()" class="btn-md btn-dark">Add New Folio</button>
 			</p>
 		</h3>
 		<hr>
@@ -64,7 +64,8 @@
 				<td><button type="button" class="btn-sm btn-outline-success" onclick="addNewFolio()">Add</button></td>
 				<td><button type="button" class="btn-sm btn-outline-danger" onclick="can()">Cancel</button></td>
 			</tr>
-			<% for(var i=0; i < data.length; i++) { %>
+			<% if(data!="") 
+				{for(var i=0; i < data.length; i++) { %>
             <tr class="clickable" onclick="gotoDetails(this)" id=<%= data[i].id %> >
 				<td><%=data[i].name%></td>
                 <td><%=data[i].credit%></td>
@@ -72,7 +73,9 @@
                 <td><%=data[i].balance%></td>
                 <td><%=data[i].remarks%></td>
 			</tr>
-			<% } %>
+			<% }}
+			else {%>
+				<h4>No records found!!</h4><%}%>
 		</table>
 	</div>
 </body>
@@ -174,17 +177,17 @@ $("#folioIndex tr").hover(function() {
 });
 
 // To autofill the Balance ----------------------------------------------------------------------------------------
-$('#fcre').change( function() {
-	if($("#fcre").val()!="") { 
-		var bal = parseInt(parseInt($("#fcre").val()) - parseInt($("#fdeb").val()));
-		$("#fbal").val(bal);
-	}
-});
+// $('#fcre').change( function() {
+// 	if($("#fcre").val()!="") { 
+// 		var bal = parseInt(parseInt($("#fcre").val()) - parseInt($("#fdeb").val()));
+// 		$("#fbal").val(bal);
+// 	}
+// });
 
-$('#fdeb').change( function() {
-	if($("#fdeb").val()!="")
-		$("#fbal").val(parseInt(parseInt($("#fcre").val()) - parseInt($("#fdeb").val())));
-});
+// $('#fdeb').change( function() {
+// 	if($("#fdeb").val()!="")
+// 		$("#fbal").val(parseInt(parseInt($("#fcre").val()) - parseInt($("#fdeb").val())));
+// });
 
 </script>
 </html>

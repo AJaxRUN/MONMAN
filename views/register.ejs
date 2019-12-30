@@ -59,6 +59,7 @@
   		{
             errordisplay("empty_name","Enter your name");
             isValid=false;
+            return;
   		}
   		else {
             $("#empty_name").hide();
@@ -66,8 +67,9 @@
         }
   		if(!$.trim($("#username").val()))
   		{
-            isValid=false;
-  			errordisplay("empty_username","Enter your username");
+          isValid=false;
+          errordisplay("empty_username","Enter your username");
+          return;
   		}
         else {
             isValid=true;
@@ -75,8 +77,9 @@
         }
   		if(!$.trim($("#password").val()))
   		{
-            isValid=false;
-  			errordisplay("empty_password","Enter your password");
+        isValid=false;
+        errordisplay("empty_password","Enter your password");
+        return;
   		}
         else {
             isValid=true;
